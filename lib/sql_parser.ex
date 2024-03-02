@@ -6,8 +6,21 @@ defmodule SqlParser do
   end
 
   defp parse(input) do
-    parser = identifier_char()
+    parser = many(identifier_char())
     parser.(input)
+  end
+
+  defp many(parser) do
+    fn input ->
+      case parser.(input) do
+        {:error, _reason} ->
+          {:ok, [], input}
+
+        {:ok, first_term, rest} ->
+          {:ok, other_terms, rest} = many(parser).(rest)
+          {:ok, [first_term | other_terms], rest}
+      end
+    end
   end
 
   defp identifier_char(), do: choice([ascii_letter(), char(?_), digit()])
