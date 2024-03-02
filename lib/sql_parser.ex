@@ -6,8 +6,18 @@ defmodule SqlParser do
   end
 
   defp parse(input) do
-    parser = char()
+    parser = satisfy(char(), fn char -> char in ?0..?9 end)
     parser.(input)
+  end
+
+  defp satisfy(parser, acceptor) do
+    fn input ->
+      with {:ok, term, rest} <- parser.(input) do
+        if acceptor.(term),
+          do: {:ok, term, rest},
+          else: {:error, "Term rejected"}
+      end
+    end
   end
 
   # A combinator is a function that returns a parser
