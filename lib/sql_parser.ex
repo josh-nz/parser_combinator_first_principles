@@ -6,9 +6,13 @@ defmodule SqlParser do
   end
 
   defp parse(input) do
-    parser = satisfy(char(), fn char -> char in ?0..?9 end)
+    parser = char(?_)
     parser.(input)
   end
+
+  defp digit(), do: satisfy(char(), fn char -> char in ?0..?9 end)
+  defp ascii_letter(), do: satisfy(char(), fn char -> char in ?A..?Z or char in ?a..?z end)
+  defp char(expected), do: satisfy(char(), fn char -> char == expected end)
 
   defp satisfy(parser, acceptor) do
     fn input ->
