@@ -18,14 +18,9 @@ defmodule SqlParser do
   end
 
   defp identifier() do
-    map(
-      satisfy(
-        many(identifier_char()),
-        # If we've failed to parse an identifier, return :error case.
-        fn chars -> chars != [] end
-      ),
-      fn chars -> to_string(chars) end
-    )
+    many(identifier_char())
+    |> satisfy(fn chars -> chars != [] end) # If we've failed to parse an identifier, return :error case.
+    |> map(fn chars -> to_string(chars) end)
   end
 
   defp many(parser) do
