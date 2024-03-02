@@ -6,9 +6,11 @@ defmodule SqlParser do
   end
 
   defp parse(input) do
-    parser = choice([ascii_letter(), char(?_), digit()])
+    parser = identifier_char()
     parser.(input)
   end
+
+  defp identifier_char(), do: choice([ascii_letter(), char(?_), digit()])
 
   # Sometimes called `one-of`.
   defp choice(parsers) do
