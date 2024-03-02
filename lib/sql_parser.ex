@@ -1,13 +1,27 @@
 defmodule SqlParser do
   def run() do
-    input = "foo_1 bar_2"
+    input = "A_1"
     IO.puts("input: #{inspect(input)}\n")
     parse(input)
   end
 
   defp parse(input) do
-    parser = identifier()
+    parser = sequence([ascii_letter(), char(?_), digit()])
     parser.(input)
+  end
+
+  defp sequence(parsers) do
+    fn input ->
+      case parsers do
+        [] ->
+          {:ok, [], input}
+
+        [first_parser | other_parsers] ->
+          with {:ok, first_term, rest} <- first_parser.(input),
+               {:ok, other_terms, rest} <- sequence(other_parsers).(rest),
+               do: {:ok, [first_term | other_terms], rest}
+      end
+    end
   end
 
   defp map(parser, mapper) do
@@ -19,7 +33,8 @@ defmodule SqlParser do
 
   defp identifier() do
     many(identifier_char())
-    |> satisfy(fn chars -> chars != [] end) # If we've failed to parse an identifier, return :error case.
+    # If we've failed to parse an identifier, return :error case.
+    |> satisfy(fn chars -> chars != [] end)
     |> map(fn chars -> to_string(chars) end)
   end
 
