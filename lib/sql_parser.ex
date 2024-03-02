@@ -6,7 +6,7 @@ defmodule SqlParser do
   end
 
   defp parse(input) do
-    parser = map(identifier(), fn chars -> to_string(chars) end)
+    parser = identifier()
     parser.(input)
   end
 
@@ -18,10 +18,13 @@ defmodule SqlParser do
   end
 
   defp identifier() do
-    satisfy(
-      many(identifier_char()),
-      # If we've failed to parse an identifier, return :error case.
-      fn chars -> chars != [] end
+    map(
+      satisfy(
+        many(identifier_char()),
+        # If we've failed to parse an identifier, return :error case.
+        fn chars -> chars != [] end
+      ),
+      fn chars -> to_string(chars) end
     )
   end
 
