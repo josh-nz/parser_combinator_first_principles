@@ -6,9 +6,14 @@ defmodule SqlParser do
   end
 
   defp parse(input) do
-    parser = many(identifier_char())
+    parser = identifier()
     parser.(input)
   end
+
+  # This implementation will stop on whitespace,
+  # so will immediately stop returning :ok on input
+  # such as " foo_1". Not ideal.
+  defp identifier(), do: many(identifier_char())
 
   defp many(parser) do
     fn input ->
