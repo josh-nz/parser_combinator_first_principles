@@ -1,13 +1,27 @@
 defmodule SqlParser do
   def run() do
-    input = "A_1"
+    input = "
+      
+      
+          foo_1
+      
+        bar_2       
+      
+      "
     IO.puts("input: #{inspect(input)}\n")
     parse(input)
   end
 
   defp parse(input) do
-    parser = sequence([ascii_letter(), char(?_), digit()])
+    parser = token(identifier())
     parser.(input)
+  end
+
+  defp token(parser) do
+    # Some whitespace chars are missing here.
+    whitespace = many(choice([char(?\s), char(?\r), char(?\n)]))
+    sequence([whitespace, parser, whitespace])
+    |> map(fn [_leading_whitespace, term, _trailing_whitespace] -> term end)
   end
 
   defp sequence(parsers) do
