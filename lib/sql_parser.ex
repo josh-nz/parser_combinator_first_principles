@@ -1,6 +1,6 @@
 defmodule SqlParser do
   def run() do
-    input = "foo_1 bar_2"
+    input = " foo_1 bar_2"
     IO.puts("input: #{inspect(input)}\n")
     parse(input)
   end
@@ -10,10 +10,13 @@ defmodule SqlParser do
     parser.(input)
   end
 
-  # This implementation will stop on whitespace,
-  # so will immediately stop returning :ok on input
-  # such as " foo_1". Not ideal.
-  defp identifier(), do: many(identifier_char())
+  defp identifier() do
+    satisfy(
+      many(identifier_char()),
+      # If we've failed to parse an identifier, return :error case.
+      fn chars -> chars != [] end
+    )
+  end
 
   defp many(parser) do
     fn input ->
