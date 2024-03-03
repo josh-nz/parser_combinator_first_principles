@@ -55,6 +55,9 @@ defmodule SqlParser do
       String.upcase(identifier) == String.upcase(to_string(expected))
     end)
     |> map(fn _ -> expected end)
+    # Quick way to get some slightly better error messages,
+    # via an error combinator.
+    # |> error(fn _error -> "Expected keyword `${expected}`" end)
   end
 
   defp columns(), do: separated_list(token(identifier()), token(char(?,)))
