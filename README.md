@@ -8,4 +8,5 @@ This parser is designed to work on this subset of SQL:
         )
     )
 
+The commit history will walk through the processes of building this up from scratch.
     
