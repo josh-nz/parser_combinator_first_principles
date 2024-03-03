@@ -35,9 +35,16 @@ defmodule SqlParser do
   defp subquery() do
     sequence([
       token(char(?()),
-      select_statement(),
+      lazy(fn -> select_statement() end),
       token(char(?)))
     ])
+  end
+
+  defp lazy(combinator) do
+    fn input ->
+      parser = combinator.()
+      parser.(input)
+    end
   end
 
   defp keyword(expected) do
