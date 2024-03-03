@@ -1,25 +1,35 @@
 defmodule SqlParser do
   def run() do
     input = "
-      
-      
           foo_1
+      ,
       
-        bar_2       
-      
+        bar_2,bar_3     col_4
       "
     IO.puts("input: #{inspect(input)}\n")
     parse(input)
   end
 
   defp parse(input) do
-    parser = token(identifier())
+    parser = separated_list(token(identifier()), token(char(?,)))
     parser.(input)
+  end
+
+  defp separated_list(element_parser, separator_parser) do
+    sequence([
+      element_parser,
+      many(sequence([separator_parser, element_parser]))
+    ])
+    |> map(fn [first_element, rest] ->
+      other_elements = Enum.map(rest, fn [_, element] -> element end)
+      [first_element | other_elements]
+    end)
   end
 
   defp token(parser) do
     # Some whitespace chars are missing here.
     whitespace = many(choice([char(?\s), char(?\r), char(?\n)]))
+
     sequence([whitespace, parser, whitespace])
     |> map(fn [_leading_whitespace, term, _trailing_whitespace] -> term end)
   end
