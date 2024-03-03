@@ -11,8 +11,17 @@ defmodule SqlParser do
   end
 
   defp parse(input) do
-    parser = keyword(:select)
+    parser = select_statement()
     parser.(input)
+  end
+
+  defp select_statement() do
+    sequence([
+      keyword(:select),
+      columns(),
+      keyword(:from),
+      token(identifier())
+    ])
   end
 
   defp keyword(expected) do
