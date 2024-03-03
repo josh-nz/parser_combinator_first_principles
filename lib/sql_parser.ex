@@ -11,10 +11,11 @@ defmodule SqlParser do
   end
 
   defp parse(input) do
-    parser = separated_list(token(identifier()), token(char(?,)))
+    parser = columns()
     parser.(input)
   end
 
+  defp columns(), do: separated_list(token(identifier()), token(char(?,)))
   defp separated_list(element_parser, separator_parser) do
     sequence([
       element_parser,
