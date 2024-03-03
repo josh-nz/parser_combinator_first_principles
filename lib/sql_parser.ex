@@ -22,6 +22,13 @@ defmodule SqlParser do
       keyword(:from),
       token(identifier())
     ])
+    |> map(fn [_, columns, _, table] ->
+      %{
+        statement: :select,
+        columns: columns,
+        from: table
+      }
+    end)
   end
 
   defp keyword(expected) do
