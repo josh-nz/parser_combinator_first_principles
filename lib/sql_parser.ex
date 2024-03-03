@@ -23,7 +23,7 @@ defmodule SqlParser do
       keyword(:from),
       choice([token(identifier()), subquery()])
     ])
-    |> map(fn [_, columns, _, table] ->
+    |> map(fn [_select, columns, _from, table] ->
       %{
         statement: :select,
         columns: columns,
@@ -38,6 +38,7 @@ defmodule SqlParser do
       lazy(fn -> select_statement() end),
       token(char(?)))
     ])
+    |> map(fn [_open_paren, subselect, _close_paren] -> subselect end)
   end
 
   defp lazy(combinator) do
