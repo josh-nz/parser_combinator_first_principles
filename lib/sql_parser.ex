@@ -1,21 +1,31 @@
 defmodule SqlParser do
   def run() do
-    input = "
+    input = "SeLect 
           foo_1
       ,
       
-        bar_2,bar_3     col_4
+        bar_2,bar_3   from some_table
       "
     IO.puts("input: #{inspect(input)}\n")
     parse(input)
   end
 
   defp parse(input) do
-    parser = columns()
+    parser = keyword(:select)
     parser.(input)
   end
 
+  defp keyword(expected) do
+    identifier()
+    |> token()
+    |> satisfy(fn identifier ->
+      String.upcase(identifier) == String.upcase(to_string(expected))
+    end)
+    |> map(fn _ -> expected end)
+  end
+
   defp columns(), do: separated_list(token(identifier()), token(char(?,)))
+
   defp separated_list(element_parser, separator_parser) do
     sequence([
       element_parser,
